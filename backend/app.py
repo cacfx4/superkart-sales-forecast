@@ -49,7 +49,14 @@ superkart_api = Flask("SuperKart")
 # Loading once at startup is more efficient than loading
 # the model for every request.
 
-model = joblib.load("/content/drive/MyDrive/Data/SuperKart/deployment_files/superKart_model_v1_0.joblib")
+#model = joblib.load("/content/drive/MyDrive/Data/SuperKart/deployment_files/superKart_model_v1_0.joblib")
+
+MODEL_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "superKart_model_v1_0.joblib"
+)
+
+model = joblib.load(MODEL_PATH)
 
 
 # ==========================================================
