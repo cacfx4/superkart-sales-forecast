@@ -21,10 +21,8 @@ st.set_page_config(
 # ==========================================================
 # Backend Configuration
 # ==========================================================
-# Docker container name for Flask backend
 
-BACKEND_URL = "http://superkart-backend:5000"
-
+BACKEND_URL = "http://" + "superkart-backend:5000"
 
 # ==========================================================
 # Application Title
