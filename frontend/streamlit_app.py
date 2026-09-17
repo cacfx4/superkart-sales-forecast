@@ -5,6 +5,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import os
 
 
 # ==========================================================
@@ -22,7 +23,16 @@ st.set_page_config(
 # Backend Configuration
 # ==========================================================
 
-BACKEND_URL = "http://" + "superkart-backend:5000"
+# Use the host-mapped backend URL for Linux/devcontainer networking.
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:5000").rstrip("/")
+REQUEST_TIMEOUT_SECONDS = 10
+
+
+def call_backend(method, endpoint, **kwargs):
+    url = f"{BACKEND_URL}{endpoint}"
+    kwargs.setdefault("timeout", REQUEST_TIMEOUT_SECONDS)
+    return requests.request(method, url, **kwargs)
+
 
 # ==========================================================
 # Application Title
@@ -181,11 +191,13 @@ with tab1:
 
         try:
 
-            response = requests.post(
-                f"{BACKEND_URL}/v1/predict",
+            response = call_backend(
+                "POST",
+                "/v1/predict",
                 json=payload
             )
 
+            response.raise_for_status()
             result = response.json()
 
             st.success(
@@ -194,7 +206,7 @@ with tab1:
 
         except Exception as e:
 
-            st.error(str(e))
+            st.error(f"Backend request failed: {e}")
 
 
 # ==========================================================
@@ -228,11 +240,13 @@ with tab2:
 
             try:
 
-                response = requests.post(
-                    f"{BACKEND_URL}/v1/predictbatch",
+                response = call_backend(
+                    "POST",
+                    "/v1/predictbatch",
                     files=files
                 )
 
+                response.raise_for_status()
                 results = response.json()
 
                 prediction_df = preview_df.copy()
@@ -256,4 +270,4 @@ with tab2:
 
             except Exception as e:
 
-                st.error(str(e))
+                st.error(f"Backend request failed: {e}")
