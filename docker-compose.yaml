@@ -1,0 +1,24 @@
+#docker-compose yaml
+services:
+  superkart-backend:
+    build:
+      context: ./backend
+    container_name: superkart-backend
+    network_mode: host
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health', timeout=3).read()"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: superkart-frontend
+    network_mode: host
+    environment:
+      - BACKEND_URL=http://localhost:5000
+    depends_on:
+      superkart-backend:
+        condition: service_healthy
